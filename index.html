@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head><title>Rock Paper Scissor</title>
+    <style>
+        body{
+            background-color: black;
+            color:white;
+        }
+        .container {
+            text-align: center;
+            margin-top: 35px;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        button {
+            margin: 15px;
+            background-color: rgb(174, 227, 51);
+            border-style: none;
+            padding: 12px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+        }
+
+        button:hover {
+            background-color: aqua;
+            box-shadow: 3px 3px 3px rgba(107, 103, 103, 0.3);
+            transform: scale(1.25);
+        }
+
+        #ans {
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            font-weight: 400;
+            font-size: 18px; 
+            color: darkblue; 
+            margin-top: 20px;
+        }
+        #sc{
+            
+            font-size: 30px;
+            word-spacing: 20px;
+            margin-bottom: 15px;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            font-weight: 800;
+        }
+        .intro {
+            word-spacing: 10px;
+            text-align: center;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            font-size: 35px; 
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+
+       
+        .pop {
+            font-size: 100px;
+            margin-top: 15px;
+            opacity: 0;
+            transition: opacity 3s ease-in-out;
+        }
+        @keyframes poping{
+            0% {transform :scale(1); opacity:0.75;}
+            50% {transform :scale(1.05); opacity:1;}
+            100% {transform :scale(1); opacity:0.75;}
+        }
+        .introanimation{
+            animation: poping 10s linear infinite;
+        }
+        @keyframes popFade {
+            0% { transform: scale(0); opacity: 0; } 
+            50% { transform: scale(2); opacity: 1; }
+            100% { transform: scale(1); opacity: 0; } 
+        }
+
+     
+        .pop-animation {
+            animation: popFade 1s ease-in-out;
+        }
+        .score{
+            word-spacing: 60px;
+           font-size: 30px;
+           
+           font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        }
+        @keyframes scorepop{
+            0% { transform: scale(0); opacity: 0; } 
+            50% { transform: scale(1.25); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; } 
+        }
+        .score-animation{
+            animation: scorepop 0.5s ease-in-out;
+        }
+        
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <p class="intro introanimation">Rock Paper Scissor <br> ✊✋✌️</p>
+        <div class="btn-container">
+            <button onclick="play('rock'); popup('rock')">Rock</button>
+            <button onclick="play('paper'); popup('paper')">Paper</button>
+            <button onclick="play('scissor'); popup('scissor')">Scissor</button>
+        </div>
+        <p class="pop "></p>
+        <p id="sc">WIN LOSE TIE</p>
+        <p class="score"></p>
+        <p id="ans"></p>
+        <button onClick="reset()">Reset</button>
+    </div>
+
+</body>
+<script>
+   const emoji = { rock: "✊", paper: "✋", scissor: "✌️" };
+   const sco= JSON.parse(localStorage.getItem('scores')) || { 'You':0 ,'Computer':0 ,'tie':0}; 
+    scores();
+    function popup(playerChoice) {
+        
+        let popElement = document.querySelector(".pop");
+        popElement.innerText = emoji[playerChoice];
+        popElement.classList.remove("pop-animation");
+        void popElement.offsetWidth;
+        setTimeout(()=>{popElement.classList.add("pop-animation")},10);
+        
+      }
+    function reset(){
+        sco.Computer = 0;
+        sco.You = 0;
+        sco.tie=0;
+        localStorage.setItem('scores', JSON.stringify(sco)); 
+        scores();
+        console.log("Scores reset:", JSON.parse(localStorage.getItem('scores')));
+        const answer=document.querySelector('#ans');
+        answer.innerHTML='';
+       
+    }
+    function scores(){
+        localStorage.setItem('scores',JSON.stringify(sco));
+        let sc=document.querySelector(".score");
+        sc.innerText=`   ${sco.You} ${sco.Computer} ${sco.tie} `;
+        sc.classList.remove("score-animation");
+        setTimeout(()=>{sc.classList.add("score-animation")},10);
+        console.log(JSON.parse(localStorage.getItem('scores')));
+    }
+    addEventListener('keydown',(event)=>{
+            if(event.key==='r'){
+                play('rock');
+            }
+            else if(event.key==='p'){
+                play('paper');
+            }
+            else if(event.key==='s'){
+                play('scissor');
+            }
+        });
+    function play(playerChoice) {
+        const choices = ['rock', 'paper', 'scissor']; 
+        const idx = Math.floor(Math.random() * 3);
+        const computerChoice = choices[idx];
+
+        let result;
+        if (computerChoice === playerChoice) {
+            result = "It's a tie! 🤜🤛";
+            document.getElementById("ans").style.color = "yellow";
+        } else if (
+            (playerChoice === "rock" && computerChoice === "scissor") ||
+            (playerChoice === "paper" && computerChoice === "rock") ||
+            (playerChoice === "scissor" && computerChoice === "paper")
+        ) {
+            result = "You won! 🥳";
+            document.getElementById("ans").style.color = "blue";
+        } else {
+            result = "You lost! 🥹";
+            document.getElementById("ans").style.color = "red";
+        }
+
+        console.log(result);
+        if(result==="You won! 🥳"){
+            sco.You++;
+        }
+        else if(result==="You lost! 🥹"){
+            sco.Computer++;
+        }
+        else{
+            sco.tie++;
+        }
+        scores();
+        document.getElementById("ans").innerHTML = `Computer chose: ${computerChoice} ${emoji[computerChoice]} <br>  You chose: ${playerChoice} ${emoji[playerChoice]} 
+        <br> <strong>${result}</strong>`;
+    }
+</script>
+</html>
+
